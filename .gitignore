@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite databases (optional, can regenerate)
+*.db
+
+# IDE/editor settings (optional)
+.vscode/
+.idea/
+
+# macOS system files (optional)
+.DS_Store
