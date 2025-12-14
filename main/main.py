@@ -54,10 +54,11 @@ def show_menu() -> str:
     print("2. List users")
     print("3. Add favourite (manual)")
     print("4. Search movies")
-    print("5. View favourites for a user")
-    print("6. View search history for a user")
-    print("7. Exit")
-    return input("Choose an option (1-7): ").strip()
+    print("5. View trending movies")
+    print("6. View favourites for a user")
+    print("7. View search history for a user")
+    print("8. Exit")
+    return input("Choose an option (1-8): ").strip()
 
 def create_user():
     print("\n--- Create user ---")
@@ -113,7 +114,6 @@ def search_movies():
         client = TMDbClient()
     except ValueError as e:
         print(str(e))
-        print("Check your .env file is in the project root and contains TMDB_API_KEY=...")
         pause()
         return
 
@@ -124,15 +124,36 @@ def search_movies():
         pause()
         return
 
-    results = data["results"][:10]
-
     print("\nResults:")
-    for i, item in enumerate(results, start=1):
+    for i, item in enumerate(data["results"][:10], start=1):
         title = item.get("title", "Unknown title")
-        release_date = item.get("release_date", "")
-        year = release_date[:4] if release_date else ""
-        year_text = f" ({year})" if year else ""
-        print(f"{i}. {title}{year_text}")
+        year = item.get("release_date", "")[:4]
+        print(f"{i}. {title} ({year})")
+
+    pause()
+
+def view_trending_movies():
+    print("\n--- Trending movies today ---")
+
+    try:
+        client = TMDbClient()
+    except ValueError as e:
+        print(str(e))
+        pause()
+        return
+
+    data = client.get_trending_movies()
+
+    if not data or "results" not in data or not data["results"]:
+        print("No trending movies found.")
+        pause()
+        return
+
+    print("\nTop 10 trending movies:")
+    for i, item in enumerate(data["results"][:10], start=1):
+        title = item.get("title", "Unknown title")
+        year = item.get("release_date", "")[:4]
+        print(f"{i}. {title} ({year})")
 
     pause()
 
@@ -179,10 +200,12 @@ def main():
         elif choice == "4":
             search_movies()
         elif choice == "5":
-            view_favourites_for_user()
+            view_trending_movies()
         elif choice == "6":
-            view_search_history_for_user()
+            view_favourites_for_user()
         elif choice == "7":
+            view_search_history_for_user()
+        elif choice == "8":
             print("\nGoodbye 👋")
             break
         else:
